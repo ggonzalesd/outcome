@@ -5,6 +5,15 @@ export { UnwrapError } from "./unwrap-error.ts";
 const NONE_UNWRAP_MESSAGE = "Option is None. Cannot unwrap a None value.";
 const SOME_NULLABLE_MESSAGE = "Option.Some requires a non-nullable value. Use Option.Of for nullable input.";
 type NonCallable<E> = E extends (...args: never[]) => unknown ? never : E;
+type ValueOf<O> = O extends Option<infer V> ? V : never;
+type TupleValues<T extends readonly Option<NonNullable<unknown>>[]> = {
+  -readonly [K in keyof T]: ValueOf<T[K]>;
+};
+type RecordValues<T> = { [K in keyof T]: ValueOf<T[K]> };
+
+function isPresent<T>(value: T): value is NonNullable<T> {
+  return value !== null && value !== undefined;
+}
 
 /** Describe arbitrary recursive Option nesting around a non-nullable base payload. */
 export type NestedOption<T extends NonNullable<unknown>> = Option<T | NestedOption<T>>;
@@ -25,7 +34,7 @@ export class Option<T extends NonNullable<unknown>> {
   ): boolean {
     const v1 = first._v;
     const v2 = second._v;
-    if ((v1 === null || v1 === undefined) && (v2 === null || v2 === undefined)) {
+    if (!isPresent(v1) && !isPresent(v2)) {
       return false;
     }
     return v1 === v2;
@@ -33,7 +42,7 @@ export class Option<T extends NonNullable<unknown>> {
 
   /** Construct presence; reject nullable input even when called from untyped code. */
   static Some<T extends NonNullable<unknown>>(value: T): Option<T> {
-    if (value === null || value === undefined) throw new TypeError(SOME_NULLABLE_MESSAGE);
+    if (!isPresent(value)) throw new TypeError(SOME_NULLABLE_MESSAGE);
     return new Option<T>(value);
   }
 
@@ -46,9 +55,8 @@ export class Option<T extends NonNullable<unknown>> {
   static Of<T extends NonNullable<unknown>>(value: T | null | undefined): Option<T>;
   static Of<T>(value: T): Option<NonNullable<T>>;
   static Of<T>(value: T): Option<NonNullable<T>> {
-    if (value === null) return new Option<NonNullable<T>>(null);
-    if (value === undefined) return new Option<NonNullable<T>>(undefined);
-    return new Option<NonNullable<T>>(value);
+    if (isPresent(value)) return new Option<NonNullable<T>>(value);
+    return new Option<NonNullable<T>>(value === null ? null : undefined);
   }
 
   /** Build a functional projection that runs only on presence. */
@@ -80,39 +88,37 @@ export class Option<T extends NonNullable<unknown>> {
   /** Combine all own record fields, including symbols; return None on the first absent field. */
   static Zip<T extends { [K in keyof T]-?: Option<NonNullable<unknown>> }>(
     options: T,
-  ): Option<{
-    [K in keyof T]: T[K] extends Option<infer U> ? U : never;
-  }> {
+  ): Option<RecordValues<T>> {
     const entries: [PropertyKey, unknown][] = [];
     for (const key of Reflect.ownKeys(options)) {
       const option = options[key as keyof T].get();
-      if (option === null || option === undefined) {
+      if (!isPresent(option)) {
         return Option.None();
       }
       entries.push([key, option]);
     }
     // Every own field is present before this complete mapped record is exposed.
-    return Option.Some(Object.fromEntries(entries) as { [K in keyof T]: T[K] extends Option<infer U> ? U : never });
+    return Option.Some(Object.fromEntries(entries) as RecordValues<T>);
   }
 
   /** Combine tuple/array values in order; None short-circuits the collection. */
   static Join<const T extends readonly Option<NonNullable<unknown>>[]>(
     options: T,
-  ): Option<{ -readonly [K in keyof T]: T[K] extends Option<infer U> ? U : never }> {
+  ): Option<TupleValues<T>> {
     const result: unknown[] = [];
     for (const entry of options) {
       const option = entry.get();
-      if (option === null || option === undefined) {
+      if (!isPresent(option)) {
         return Option.None();
       }
       result.push(option);
     }
     // Every input contributes one present value at the same position.
-    return Option.Some(result as { -readonly [K in keyof T]: T[K] extends Option<infer U> ? U : never });
+    return Option.Some(result as TupleValues<T>);
   }
 
   /** Explicit tuple spelling; Join remains available for existing callers. */
-  static Tuple<const T extends readonly Option<NonNullable<unknown>>[]>(options: T): Option<{ -readonly [K in keyof T]: T[K] extends Option<infer U> ? U : never }> {
+  static Tuple<const T extends readonly Option<NonNullable<unknown>>[]>(options: T): Option<TupleValues<T>> {
     return Option.Join(options);
   }
 
@@ -136,7 +142,7 @@ export class Option<T extends NonNullable<unknown>> {
 
   /** Extract presence or raise UnwrapError when absent. */
   unwrap(): T {
-    if (this._v === null || this._v === undefined) {
+    if (!isPresent(this._v)) {
       throw new UnwrapError(NONE_UNWRAP_MESSAGE);
     }
     return this._v;
@@ -146,7 +152,7 @@ export class Option<T extends NonNullable<unknown>> {
   asResult<E>(error: () => E): Result<T, E>;
   asResult<E>(error: NonCallable<E>): Result<T, E>;
   asResult(error: unknown): Result<T, unknown> {
-    if (this._v !== null && this._v !== undefined) return Result.Ok(this._v);
+    if (isPresent(this._v)) return Result.Ok(this._v);
     // Public overloads admit only zero-argument factories in the callable branch.
     const value: unknown = typeof error === "function" ? (error as () => unknown)() : error;
     return Result.Fail(value);
@@ -154,12 +160,12 @@ export class Option<T extends NonNullable<unknown>> {
 
   /** Convert absence to an error value without invoking it, even when it is callable. */
   asResultValue<E>(error: E): Result<T, E> {
-    return this._v === null || this._v === undefined ? Result.Fail(error) : Result.Ok(this._v);
+    return isPresent(this._v) ? Result.Ok(this._v) : Result.Fail(error);
   }
 
   /** Move an inner Result outward; absent Option becomes successful absence. */
   switch<T extends NonNullable<unknown>, E>(this: Option<Result<T, E>>): Result<Option<T>, E> {
-    if (this._v === null || this._v === undefined) {
+    if (!isPresent(this._v)) {
       return Result.Ok<Option<T>, E>(Option.None<T>());
     }
 
@@ -176,12 +182,12 @@ export class Option<T extends NonNullable<unknown>> {
 
   /** Extract presence or use the supplied fallback payload. */
   orElse(defaultValue: T): T {
-    return this._v !== null && this._v !== undefined ? this._v : defaultValue;
+    return isPresent(this._v) ? this._v : defaultValue;
   }
 
   /** Extract presence or lazily construct and throw an Error. */
   orElseThrow<N extends Error>(fn: () => N): T {
-    if (this._v === null || this._v === undefined) {
+    if (!isPresent(this._v)) {
       throw fn();
     }
     return this._v;
@@ -189,7 +195,7 @@ export class Option<T extends NonNullable<unknown>> {
 
   /** Retain presence only when the predicate passes; skip the predicate on absence. */
   filter(predicate: (value: T) => boolean): Option<T> {
-    if (this._v !== null && this._v !== undefined && predicate(this._v)) {
+    if (isPresent(this._v) && predicate(this._v)) {
       return this;
     }
     return Option.None<T>();
@@ -197,7 +203,7 @@ export class Option<T extends NonNullable<unknown>> {
 
   /** Transform presence into a non-nullable payload; skip absence and propagate callback errors. */
   map<U extends NonNullable<unknown>>(fn: (value: T) => U): Option<U> {
-    if (this._v !== null && this._v !== undefined) {
+    if (isPresent(this._v)) {
       return Option.Some(fn(this._v));
     }
     return Option.None<U>();
@@ -205,7 +211,7 @@ export class Option<T extends NonNullable<unknown>> {
 
   /** Execute exactly one exhaustive branch handler, allowing differing outputs or void. */
   match<U, V = U>(patterns: { some: (value: T) => U; none: () => V }): U | V {
-    if (this._v !== null && this._v !== undefined) {
+    if (isPresent(this._v)) {
       return patterns.some(this._v);
     }
     return patterns.none();
@@ -218,7 +224,7 @@ export class Option<T extends NonNullable<unknown>> {
 
   /** Observe presence once and return this instance; skip absence. */
   ifSome(fn: (value: T) => void): this {
-    if (this._v !== null && this._v !== undefined) {
+    if (isPresent(this._v)) {
       fn(this._v);
     }
     return this;
@@ -226,7 +232,7 @@ export class Option<T extends NonNullable<unknown>> {
 
   /** Observe absence once and return this instance; skip presence. */
   ifNone(fn: () => void): this {
-    if (this._v === null || this._v === undefined) {
+    if (!isPresent(this._v)) {
       fn();
     }
     return this;

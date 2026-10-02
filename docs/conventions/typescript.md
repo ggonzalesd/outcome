@@ -75,6 +75,9 @@ throwables where Vitest and Bun matchers differ. Add regressions for demonstrate
 for collection ordering, lazy branches, conversion, and invariants. Compile-time contracts check
 inference, guards, tuples, errors, and forbidden calls; every @ts-expect-error explains its purpose.
 
+Share arbitrary-throwable assertions through tests/helpers/expect-thrown.ts. Group equivalent
+scenarios with table-driven cases while retaining their independent runtime checks.
+
 The package integration test packs and extracts the library, then runs an independent temporary
 Bun consumer with auto-install disabled. It covers classes, public subpaths, original methods, and
 exclusion of repository tooling. It requires tar on Linux/macOS, with no network or services.

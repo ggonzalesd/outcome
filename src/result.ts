@@ -181,11 +181,7 @@ export class Result<T, E = unknown> {
     fn: () => X,
   ): Result<T, X | E> {
     if (!this._v.success) return Result.Fail<E, T>(this._v.error);
-
-    const option = this._v.value.get();
-    if (option === null || option === undefined) return Result.Fail<X, T>(fn());
-
-    return Result.Ok<T, X>(option);
+    return this._v.value.asResult(fn);
   }
 
   /** Fail on presence, succeed without a value on absence, and preserve an existing failure. */

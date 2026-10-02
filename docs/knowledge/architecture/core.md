@@ -10,6 +10,11 @@ and camelCase instance methods. There is no public variant hierarchy and no shar
 Wrappers are frozen. Result's plain state is frozen as well; payloads and error values retain their
 identity and mutability. Result unwrap throws the original error; Option unwrap uses UnwrapError.
 
+Option keeps a module-local presence guard so its branches share the same null/undefined rule and
+TypeScript narrowing. Mapped tuple and record types use local aliases, following Result's existing
+pattern; the two classes do not depend on a generic container engine. Result.whenNone delegates
+the inner conversion to Option.asResult after handling an existing outer failure.
+
 Result and Option refer to one another for conversions. Neither invokes the other during module
 initialization; calls happen only during consumer operations. The packaged integration test covers
 both direct subpath entries, exported class identity, and conversion behavior.
