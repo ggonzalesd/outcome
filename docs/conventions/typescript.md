@@ -94,4 +94,12 @@ calls must resolve the installed package's public entries, never relative src im
 local tarball installation and consumption; GitHub fetching and authentication need separate
 validation once a remote exists. No network, services, or external tar executable is required.
 
+The published revision b3c630c90f2c396276620b342e05b9fb656a720d was also installed through
+github:ggonzalesd/outcome into a temporary consumer. Its runtime and type fixtures pass, and a
+subsequent offline frozen-lockfile install succeeds. This manual check is separate from make verify.
+GitHub dependencies download the repository snapshot, including tests and docs; package.json files
+limits packed tarballs, not the GitHub snapshot. Runtime imports still resolve only public source
+entries, and the library's development dependencies are not installed. Consumer-owned Bun settings
+control shared storage; the checked installation resolved into the disposable cache's links store.
+
 Run make verify. Coverage measures execution; it does not prove semantics or type correctness.

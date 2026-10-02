@@ -16,3 +16,4 @@
 - [Progressive commit workflow](changelogs/2026-10/01-004-progressive-commits.md)
 - [Installed package and consumer type verification](changelogs/2026-10/01-005-installed-package-consumer.md)
 - [GitHub destination and MIT package preparation](changelogs/2026-10/01-006-github-license-preparation.md)
+- [GitHub publication, consumption, and CI correction](changelogs/2026-10/01-007-github-publication.md)

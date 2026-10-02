@@ -173,21 +173,31 @@ calling Promise is outside its capture boundary. Exceptions from error mappers p
 
 The repository is [ggonzalesd/outcome](https://github.com/ggonzalesd/outcome). The package exports
 TypeScript source for Bun through the root, `outcome/result`, and `outcome/option`. No registry
-publication or installation-time build is required. The initial local version is 0.1.0; no GitHub
-release tag has been created. Once v0.1.0 is published, a consumer can declare:
+publication or installation-time build is required. The initial version is 0.1.0; no GitHub release
+tag has been created. A consumer can install this verified published revision:
 
 ```json
 {
   "dependencies": {
-    "outcome": "github:ggonzalesd/outcome#v0.1.0"
+    "outcome": "github:ggonzalesd/outcome#b3c630c90f2c396276620b342e05b9fb656a720d"
   }
 }
 ```
 
-The tag above is planned and must exist before using this example. An existing commit can also be
-used to pin a revision. Install with Bun and track the consumer's bun.lock. The private package.json
-flag prevents registry publication, not GitHub visibility. A supported Node/browser distribution
-has not yet been added.
+Run bun install and track the consumer's bun.lock. A published version tag can later replace the
+commit reference; v0.1.0 remains planned. The private package.json flag prevents registry publication,
+not GitHub visibility. A supported Node/browser distribution has not yet been added.
+
+Shared storage is configured by the consumer or its global Bun configuration. To enable it in a
+consumer's bunfig.toml:
+
+```toml
+[install]
+linker = "isolated"
+globalStore = true
+```
+
+Installing Outcome does not apply this repository's Bun or mise settings to the consumer.
 
 ## Development and verification
 

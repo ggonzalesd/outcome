@@ -16,10 +16,10 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      BUN_INSTALL_CACHE_DIR: ${{ runner.temp }}/bun-cache
     steps:
       - uses: actions/checkout@v7
+      - name: Configure shared Bun cache
+        run: echo "BUN_INSTALL_CACHE_DIR=$RUNNER_TEMP/bun-cache" >> "$GITHUB_ENV"
       - uses: jdx/mise-action@v4
         with:
           version: 2026.9.9
