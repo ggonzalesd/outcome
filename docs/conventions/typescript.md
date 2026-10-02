@@ -94,9 +94,12 @@ calls must resolve the installed package's public entries, never relative src im
 local tarball installation and consumption; GitHub fetching and authentication need separate
 validation once a remote exists. No network, services, or external tar executable is required.
 
-The published revision b3c630c90f2c396276620b342e05b9fb656a720d was also installed through
-github:ggonzalesd/outcome into a temporary consumer. Its runtime and type fixtures pass, and a
-subsequent offline frozen-lockfile install succeeds. This manual check is separate from make verify.
+The published v0.1.0 tag, pointing to 941a745be0d38d2c735887928f74223e6a2b42b1, was also installed
+through github:ggonzalesd/outcome into a temporary consumer. Its runtime and type fixtures pass,
+and a subsequent offline frozen-lockfile install succeeds after removing that consumer's
+node_modules. This manual check is separate from make verify. For annotated tags, Bun 1.4.2 records
+the tag object identity in its resolved GitHub package entry; do not assume that entry contains the
+peeled commit hash. Verify the hosted tag target and installed contents against the intended revision.
 GitHub dependencies download the repository snapshot, including tests and docs; package.json files
 limits packed tarballs, not the GitHub snapshot. Runtime imports still resolve only public source
 entries, and the library's development dependencies are not installed. Consumer-owned Bun settings
