@@ -13,6 +13,16 @@ run `make verify`, and obtain approval for the concrete commit if not already au
 Conventional Commit such as `feat(core): add Result and Option primitives`. Never add attribution
 or co-author trailers.
 
+When the maintainer authorizes progressive commits, record each completed, verified slice before
+moving on to the next. Group code with its behavior/type tests and the documentation needed to
+review it. Make focused commits for independent concerns instead of accumulating all changes until
+the final hand-off. This authorization persists across turns within the approved scope; do not
+request it again for each commit. Narrower instructions or revocation take precedence.
+
+For an existing backlog of uncommitted work, organize coherent snapshots from available evidence.
+Keep commit timestamps truthful, do not recreate unavailable intermediate versions, and verify each
+snapshot before committing. Report the resulting commit IDs and final working-tree state.
+
 Before configuring a remote or creating a GitHub repository, establish the owner, repository name,
 and visibility. Before pushing or tagging, get explicit approval for the concrete revision and
 destination. Release tags use `vMAJOR.MINOR.PATCH`; do not retarget published tags.

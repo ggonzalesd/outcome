@@ -61,6 +61,11 @@ reset, checkout, commit, push, tags, remotes, and PR creation need explicit auth
 conversation. An explicit request for that operation counts; do not ask again when already approved.
 See [Git workflow](docs/playbooks/git-workflow.md).
 
+When the maintainer authorizes progressive commits, commit each completed, verified, cohesive slice
+before starting the next one. Keep implementation, its tests, and relevant documentation together.
+Do not accumulate all work until hand-off or ask again for an authorization already granted in the
+conversation. Progressive commit authorization does not authorize a push or remote changes.
+
 Ask before adding or installing dependencies unless the current conversation already authorizes
 the exact work. Use Bun, not npm or pnpm, in this repository. Keep versions exact and `bun.lock`
 tracked. Preserve the global cache and shared-store configuration; do not install project tools
