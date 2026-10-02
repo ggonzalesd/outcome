@@ -10,6 +10,7 @@
 - [Change triage](playbooks/change-triage.md)
 - [Bug fix](playbooks/bug-fix.md)
 - [Git workflow](playbooks/git-workflow.md)
+- [v0.1.0 release notes](releases/v0.1.0.md)
 - [Initial setup record](changelogs/2026-10/01-001-initial-setup.md)
 - [Reference audit and class API restoration](changelogs/2026-10/01-002-reference-class-api.md)
 - [Core cleanup and behavior preservation](changelogs/2026-10/01-003-core-cleanup.md)
@@ -17,3 +18,4 @@
 - [Installed package and consumer type verification](changelogs/2026-10/01-005-installed-package-consumer.md)
 - [GitHub destination and MIT package preparation](changelogs/2026-10/01-006-github-license-preparation.md)
 - [GitHub publication, consumption, and CI correction](changelogs/2026-10/01-007-github-publication.md)
+- [First functional version preparation](changelogs/2026-10/01-008-first-version.md)
