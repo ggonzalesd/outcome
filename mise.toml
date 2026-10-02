@@ -1,0 +1,22 @@
+[tools]
+bun = "1.4.2"
+
+[tasks.verify]
+description = "Check documentation, agent harnesses, types, and tests"
+run = "bun run verify"
+
+[tasks.test]
+description = "Run all runtime tests"
+run = "bun run test"
+
+[tasks."test:unit"]
+description = "Run unit tests"
+run = "bun run test:unit"
+
+[tasks."test:integration"]
+description = "Check consumption of the packaged library"
+run = "bun run test:integration"
+
+[tasks.typecheck]
+description = "Check source, tests, scripts, and type contracts"
+run = "bun run typecheck"

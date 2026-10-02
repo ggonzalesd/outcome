@@ -1,0 +1,38 @@
+name: Verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BUN_INSTALL_CACHE_DIR: ${{ runner.temp }}/bun-cache
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v4
+        with:
+          version: 2026.9.9
+          cache: true
+      - name: Restore shared Bun cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.BUN_INSTALL_CACHE_DIR }}
+          key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock', 'mise.toml', 'bunfig.toml') }}
+          restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+      - name: Install pinned development dependencies
+        run: bun install --frozen-lockfile
+      - name: Verify repository and library
+        run: bun run verify
+      - name: Check package file selection
+        run: bun run pack:check

@@ -1,0 +1,7 @@
+---
+description: Read the shared repository manual before changing Outcome
+alwaysApply: true
+---
+
+Read @AGENTS.md, then @docs/harness.md and the relevant playbook.
+Keep project rules in AGENTS.md; this file is only a pointer.

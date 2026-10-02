@@ -1,0 +1,17 @@
+node_modules/
+coverage/
+dist/
+*.tsbuildinfo
+*.tgz
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+.codex/
+.claude/settings.local.json
+.gemini/
+.opencode/
+mise.local.toml

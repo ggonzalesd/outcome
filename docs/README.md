@@ -1,0 +1,14 @@
+# Documentation index
+
+- [Agent operating manual](../AGENTS.md)
+- [Harness map](harness.md)
+- [TypeScript and API conventions](conventions/typescript.md)
+- [Architecture](knowledge/architecture/core.md)
+- [Current class API decision](knowledge/decisions/ADR-002-preserve-reference-class-api.md)
+- [Historical initial scope and distribution decision](knowledge/decisions/ADR-001-core-and-github-distribution.md)
+- [Shared-store type resolution](knowledge/gotchas/shared-store-types.md)
+- [Change triage](playbooks/change-triage.md)
+- [Bug fix](playbooks/bug-fix.md)
+- [Git workflow](playbooks/git-workflow.md)
+- [Initial setup record](changelogs/2026-10/01-001-initial-setup.md)
+- [Reference audit and class API restoration](changelogs/2026-10/01-002-reference-class-api.md)

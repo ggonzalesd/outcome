@@ -1,0 +1,13 @@
+[install]
+exact = true
+linker = "isolated"
+globalStore = true
+# Keep ambient type packages visible to TypeScript while preserving shared storage.
+publicHoistPattern = ["bun-types", "@types/node", "undici-types"]
+
+# The cache directory comes from the user's global Bun configuration.
+# Do not commit workstation-specific absolute paths here.
+
+[test]
+coverageReporter = ["text", "lcov"]
+coverageDir = "coverage"

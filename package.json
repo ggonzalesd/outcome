@@ -1,0 +1,28 @@
+{
+  "name": "outcome",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Typed Result and Option primitives for Bun projects.",
+  "type": "module",
+  "sideEffects": false,
+  "packageManager": "bun@1.4.2",
+  "engines": { "bun": ">=1.4.2" },
+  "exports": {
+    ".": { "types": "./src/index.ts", "default": "./src/index.ts" },
+    "./result": { "types": "./src/result.ts", "default": "./src/result.ts" },
+    "./option": { "types": "./src/option.ts", "default": "./src/option.ts" }
+  },
+  "files": ["src", "README.md"],
+  "scripts": {
+    "test": "bun test ./tests/unit ./tests/integration",
+    "test:unit": "bun test ./tests/unit",
+    "test:integration": "bun test ./tests/integration",
+    "test:coverage": "bun test --coverage ./tests/unit",
+    "typecheck": "bun run --bun tsc --noEmit -p tsconfig.json && bun run --bun tsc --noEmit -p tsconfig.test.json",
+    "docs:check": "bun run scripts/check-docs.ts",
+    "harness:check": "bun run scripts/check-harness.ts",
+    "verify": "bun run docs:check && bun run harness:check && bun run typecheck && bun run test",
+    "pack:check": "bun pm pack --dry-run --ignore-scripts"
+  },
+  "devDependencies": { "@types/bun": "1.4.2", "typescript": "7.0.2" }
+}
