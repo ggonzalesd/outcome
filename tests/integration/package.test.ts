@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { cpSync, existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -48,8 +48,16 @@ test("a separate Bun project installs the tarball and checks runtime and type co
     const observed: unknown = JSON.parse(output);
     expect(observed).toEqual({ success: 42, missing: "missing", unwrapError: true });
 
-    const installedFiles = readdirSync(join(consumer, "node_modules", "outcome")).sort();
-    expect(installedFiles).toEqual(["README.md", "package.json", "src"]);
+    const installedPackage = join(consumer, "node_modules", "outcome");
+    const installedFiles = readdirSync(installedPackage).sort();
+    expect(installedFiles).toEqual(["LICENSE", "README.md", "package.json", "src"]);
+    expect(readFileSync(join(installedPackage, "LICENSE"), "utf8"))
+      .toBe(readFileSync(join(root, "LICENSE"), "utf8"));
+    const metadata: unknown = JSON.parse(readFileSync(join(installedPackage, "package.json"), "utf8"));
+    expect(metadata).toMatchObject({
+      license: "MIT",
+      repository: { type: "git", url: "git+https://github.com/ggonzalesd/outcome.git" },
+    });
     expect(existsSync(join(consumer, "node_modules", "typescript"))).toBe(false);
     expect(existsSync(join(consumer, "node_modules", "@types"))).toBe(false);
   } finally {

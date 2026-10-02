@@ -83,7 +83,8 @@ independent temporary Bun consumer. Bun installs it with --offline and --ignore-
 linker, globalStore enabled, and a disposable cache. Do not create manual links to src or unpacked
 files as a substitute for installation. Runtime execution disables auto-install and covers classes,
 public subpaths, original methods, and exported identity. Installed contents exclude repository
-tooling and do not pull in the library's development dependencies.
+tooling and do not pull in the library's development dependencies. Include LICENSE alongside the
+source and README, and verify the installed license text and manifest licensing/repository metadata.
 
 Consumer fixtures live in tests/fixtures/package-consumer and are excluded from the repository's
 test compiler. The integration test copies them into the consumer and invokes the already-installed,

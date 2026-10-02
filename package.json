@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "description": "Typed Result and Option primitives for Bun projects.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ggonzalesd/outcome.git"
+  },
   "type": "module",
   "sideEffects": false,
   "packageManager": "bun@1.4.2",
@@ -12,7 +17,7 @@
     "./result": { "types": "./src/result.ts", "default": "./src/result.ts" },
     "./option": { "types": "./src/option.ts", "default": "./src/option.ts" }
   },
-  "files": ["src", "README.md"],
+  "files": ["src", "README.md", "LICENSE"],
   "scripts": {
     "test": "bun test ./tests/unit ./tests/integration",
     "test:unit": "bun test ./tests/unit",

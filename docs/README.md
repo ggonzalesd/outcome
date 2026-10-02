@@ -15,3 +15,4 @@
 - [Core cleanup and behavior preservation](changelogs/2026-10/01-003-core-cleanup.md)
 - [Progressive commit workflow](changelogs/2026-10/01-004-progressive-commits.md)
 - [Installed package and consumer type verification](changelogs/2026-10/01-005-installed-package-consumer.md)
+- [GitHub destination and MIT package preparation](changelogs/2026-10/01-006-github-license-preparation.md)

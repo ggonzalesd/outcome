@@ -171,21 +171,23 @@ calling Promise is outside its capture boundary. Exceptions from error mappers p
 
 ## GitHub consumption
 
-The package exports TypeScript source for Bun through the root, `outcome/result`, and `outcome/option`.
-No registry publication or installation-time build is required. The initial local version is 0.1.0;
-no GitHub release tag has been created. Once a repository and tag exist, a consumer can declare:
+The repository is [ggonzalesd/outcome](https://github.com/ggonzalesd/outcome). The package exports
+TypeScript source for Bun through the root, `outcome/result`, and `outcome/option`. No registry
+publication or installation-time build is required. The initial local version is 0.1.0; no GitHub
+release tag has been created. Once v0.1.0 is published, a consumer can declare:
 
 ```json
 {
   "dependencies": {
-    "outcome": "github:OWNER/outcome#v0.1.0"
+    "outcome": "github:ggonzalesd/outcome#v0.1.0"
   }
 }
 ```
 
-OWNER and the tag above are placeholders. Use the actual owner and an existing tag or commit, then
-install with Bun. The private package.json flag prevents registry publication, not GitHub visibility.
-A supported Node/browser distribution has not yet been added.
+The tag above is planned and must exist before using this example. An existing commit can also be
+used to pin a revision. Install with Bun and track the consumer's bun.lock. The private package.json
+flag prevents registry publication, not GitHub visibility. A supported Node/browser distribution
+has not yet been added.
 
 ## Development and verification
 
@@ -215,3 +217,7 @@ installation, not GitHub fetching or authentication.
 [The agent manual](AGENTS.md), [documentation index](docs/README.md), and
 [the class API decision](docs/knowledge/decisions/ADR-002-preserve-reference-class-api.md) document
 workflow, evidence, and compatibility changes. CI runs the same checks and does not publish.
+
+## License
+
+MIT. See [LICENSE](LICENSE). The license is included in the installed package.
