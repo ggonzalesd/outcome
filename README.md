@@ -205,8 +205,12 @@ make pack-check
 
 The original 150 behavior cases are adapted to Bun and checked alongside additional regression and
 collection cases. This does not claim execution of the original Vitest workspace. Compile-time
-contracts check inference and forbidden calls. The integration test packs the library and runs a
-separate temporary Bun consumer, without network or services; tar is required on Linux/macOS.
+contracts check inference and forbidden calls. The integration test packs the library and installs
+the local tarball into a separate temporary Bun consumer with offline mode and lifecycle scripts
+disabled. It checks runtime behavior and public imports through an independent strict tsconfig,
+using the repository's pinned compiler. A disposable cache isolates installation from the personal
+cache; no development dependencies are installed into the consumer. This verifies local package
+installation, not GitHub fetching or authentication.
 
 [The agent manual](AGENTS.md), [documentation index](docs/README.md), and
 [the class API decision](docs/knowledge/decisions/ADR-002-preserve-reference-class-api.md) document

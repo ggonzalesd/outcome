@@ -78,8 +78,19 @@ inference, guards, tuples, errors, and forbidden calls; every @ts-expect-error e
 Share arbitrary-throwable assertions through tests/helpers/expect-thrown.ts. Group equivalent
 scenarios with table-driven cases while retaining their independent runtime checks.
 
-The package integration test packs and extracts the library, then runs an independent temporary
-Bun consumer with auto-install disabled. It covers classes, public subpaths, original methods, and
-exclusion of repository tooling. It requires tar on Linux/macOS, with no network or services.
+The package integration test packs the library and declares the local tarball as a dependency of an
+independent temporary Bun consumer. Bun installs it with --offline and --ignore-scripts, an isolated
+linker, globalStore enabled, and a disposable cache. Do not create manual links to src or unpacked
+files as a substitute for installation. Runtime execution disables auto-install and covers classes,
+public subpaths, original methods, and exported identity. Installed contents exclude repository
+tooling and do not pull in the library's development dependencies.
+
+Consumer fixtures live in tests/fixtures/package-consumer and are excluded from the repository's
+test compiler. The integration test copies them into the consumer and invokes the already-installed,
+pinned TypeScript compiler against their standalone tsconfig. It has no repository extends, path
+aliases, ambient Bun/Node types, or skipLibCheck. Positive inference checks and explained negative
+calls must resolve the installed package's public entries, never relative src imports. This checks
+local tarball installation and consumption; GitHub fetching and authentication need separate
+validation once a remote exists. No network, services, or external tar executable is required.
 
 Run make verify. Coverage measures execution; it does not prove semantics or type correctness.
