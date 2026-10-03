@@ -11,6 +11,7 @@
 - [Bug fix](playbooks/bug-fix.md)
 - [Git workflow](playbooks/git-workflow.md)
 - [v0.1.0 release notes](releases/v0.1.0.md)
+- [v0.1.1 release notes](releases/v0.1.1.md)
 - [Initial setup record](changelogs/2026-10/01-001-initial-setup.md)
 - [Reference audit and class API restoration](changelogs/2026-10/01-002-reference-class-api.md)
 - [Core cleanup and behavior preservation](changelogs/2026-10/01-003-core-cleanup.md)
@@ -22,3 +23,4 @@
 - [v0.1.0 publication and installation verification](changelogs/2026-10/01-009-first-version-published.md)
 - [Editor discovery of Bun types](changelogs/2026-10/03-001-editor-bun-types.md)
 - [Project formatting](changelogs/2026-10/03-002-project-formatting.md)
+- [v0.1.1 patch tag preparation](changelogs/2026-10/03-003-patch-version.md)

@@ -173,19 +173,19 @@ calling Promise is outside its capture boundary. Exceptions from error mappers p
 
 The repository is [ggonzalesd/outcome](https://github.com/ggonzalesd/outcome). The package exports
 TypeScript source for Bun through the root, `outcome/result`, and `outcome/option`. No registry
-publication or installation-time build is required. Install the first functional version, v0.1.0:
+publication or installation-time build is required. Install v0.1.1:
 
 ```json
 {
   "dependencies": {
-    "outcome": "github:ggonzalesd/outcome#v0.1.0"
+    "outcome": "github:ggonzalesd/outcome#v0.1.1"
   }
 }
 ```
 
 Run bun install and track the consumer's bun.lock. Version tags identify fixed revisions and are
 never moved after publication. To upgrade, select a new version tag and update the lockfile. A full
-commit reference can also pin a revision. See the [v0.1.0 release notes](docs/releases/v0.1.0.md).
+commit reference can also pin a revision. See the [v0.1.1 release notes](docs/releases/v0.1.1.md).
 The private package.json flag prevents registry publication, not GitHub visibility. A supported
 Node/browser distribution has not yet been added.
 
