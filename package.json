@@ -23,7 +23,7 @@
     "test:unit": "bun test ./tests/unit",
     "test:integration": "bun test ./tests/integration",
     "test:coverage": "bun test --coverage ./tests/unit",
-    "typecheck": "bun run --bun tsc --noEmit -p tsconfig.json && bun run --bun tsc --noEmit -p tsconfig.test.json",
+    "typecheck": "bun run --bun tsc --noEmit -p tsconfig.lib.json && bun run --bun tsc --noEmit -p tsconfig.test.json",
     "docs:check": "bun run scripts/check-docs.ts",
     "harness:check": "bun run scripts/check-harness.ts",
     "verify": "bun run docs:check && bun run harness:check && bun run typecheck && bun run test",

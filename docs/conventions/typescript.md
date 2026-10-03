@@ -11,6 +11,12 @@ not use Bun globals, Node imports, DOM APIs, framework imports, filesystem, netw
 reads. ESM relative imports use explicit `.ts` extensions and type-only imports where appropriate.
 The root and `outcome/result`, `outcome/option` are the public package entries.
 
+`tsconfig.json` is the central editor entry point and shared compiler configuration, with no root
+files and references to `tsconfig.lib.json` and `tsconfig.test.json`. The library project includes
+only `src/` without ambient runtime types. The test project includes tests and scripts with Bun
+types and symlink preservation, excluding standalone consumer fixtures. `make typecheck` explicitly
+checks both projects without emitting files.
+
 ## Result
 
 - `Result<T, E = unknown>` is a class. `plain()` exposes the frozen `ResultPlain<T, E>` discriminated

@@ -20,5 +20,9 @@
     "noEmit": true,
     "skipLibCheck": false
   },
-  "include": ["src/**/*.ts"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.lib.json" },
+    { "path": "./tsconfig.test.json" }
+  ]
 }

@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": { "types": ["bun"], "preserveSymlinks": true },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"],
+  "include": ["tests/**/*.ts", "scripts/**/*.ts"],
   "exclude": ["tests/fixtures"]
 }
