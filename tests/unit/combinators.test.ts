@@ -17,14 +17,17 @@ describe("Result collections", () => {
     const error = { code: "missing" };
     const later = new Proxy(Result.Ok(3), {
       get(target, key, receiver) {
-        if (key === "plain") throw new Error("Later entries must not be visited");
+        if (key === "plain")
+          throw new Error("Later entries must not be visited");
         return Reflect.get(target, key, receiver);
       },
     });
-    expect(Result.Join([Result.Ok(1), Result.Fail(error), later]).plain())
-      .toEqual({ success: false, error });
-    expect(Result.Join([Result.Fail("first"), Result.Fail("second")]).plain())
-      .toEqual({ success: false, error: "first" });
+    expect(
+      Result.Join([Result.Ok(1), Result.Fail(error), later]).plain(),
+    ).toEqual({ success: false, error });
+    expect(
+      Result.Join([Result.Fail("first"), Result.Fail("second")]).plain(),
+    ).toEqual({ success: false, error: "first" });
   });
 
   test("Zip retains values and does not overwrite __proto__ on its output", () => {
@@ -40,18 +43,25 @@ describe("Result collections", () => {
   test("Zip propagates the first failure without inspecting later entries", () => {
     const later = new Proxy(Result.Ok(1), {
       get(target, key, receiver) {
-        if (key === "plain") throw new Error("Later entries must not be visited");
+        if (key === "plain")
+          throw new Error("Later entries must not be visited");
         return Reflect.get(target, key, receiver);
       },
     });
-    expect(Result.Zip({ first: Result.Fail("first"), later }).plain())
-      .toEqual({ success: false, error: "first" });
+    expect(Result.Zip({ first: Result.Fail("first"), later }).plain()).toEqual({
+      success: false,
+      error: "first",
+    });
   });
 });
 
 describe("Option collections and collapse", () => {
   test("Join and Tuple retain heterogeneous values in order", () => {
-    const values = [Option.Some(1), Option.Some("two"), Option.Some(false)] as const;
+    const values = [
+      Option.Some(1),
+      Option.Some("two"),
+      Option.Some(false),
+    ] as const;
     expect(Option.Join(values).unwrap()).toEqual([1, "two", false]);
     expect(Option.Tuple(values).unwrap()).toEqual([1, "two", false]);
   });
@@ -69,7 +79,9 @@ describe("Option collections and collapse", () => {
       },
     });
     expect(Option.Join([Option.None<number>(), later]).get()).toBeNull();
-    expect(Option.Zip({ first: Option.None<number>(), later }).get()).toBeNull();
+    expect(
+      Option.Zip({ first: Option.None<number>(), later }).get(),
+    ).toBeNull();
   });
 
   test("Zip retains symbol and non-enumerable fields", () => {
@@ -89,7 +101,9 @@ describe("Option collections and collapse", () => {
 
   test("Collapse supports flat, nested, and absent Options", () => {
     expect(Option.Collapse(Option.Some(1)).unwrap()).toBe(1);
-    expect(Option.Collapse(Option.Some(Option.Some(Option.Some(1)))).unwrap()).toBe(1);
+    expect(
+      Option.Collapse(Option.Some(Option.Some(Option.Some(1)))).unwrap(),
+    ).toBe(1);
     expect(Option.Some(Option.None<number>()).collapse().get()).toBeNull();
     expect(Option.None<number>().collapse().get()).toBeNull();
   });
@@ -109,46 +123,72 @@ describe("reference functional API", () => {
       .then(Result.MapError((error: string) => new Error(error)))
       .then(Result.Optional((value: number) => value + 1));
     expect(success.unwrap()).toBe(7);
-    const failure = await Promise.resolve(Result.Fail("missing"))
-      .then(Result.MapError((error: string) => ({ code: error })));
-    expect(failure.plain()).toEqual({ success: false, error: { code: "missing" } });
+    const failure = await Promise.resolve(Result.Fail("missing")).then(
+      Result.MapError((error: string) => ({ code: error })),
+    );
+    expect(failure.plain()).toEqual({
+      success: false,
+      error: { code: "missing" },
+    });
   });
 
   test("Option Map, Filter, Match, and Unwrap remain functional counterparts", () => {
     const mapped = Option.Map((value: number) => value * 2)(Option.Some(2));
     const filtered = Option.Filter((value: number) => value > 0)(mapped);
     expect(Option.Unwrap(filtered)).toBe(4);
-    const match = Option.Match({ some: (value: number) => String(value), none: () => "absent" });
+    const match = Option.Match({
+      some: (value: number) => String(value),
+      none: () => "absent",
+    });
     expect(match(filtered)).toBe("4");
     expect(match(Option.None<number>())).toBe("absent");
-    expect(Option.Filter((value: number) => value > 10)(mapped).get()).toBeNull();
+    expect(
+      Option.Filter((value: number) => value > 10)(mapped).get(),
+    ).toBeNull();
   });
 
   test("WhenNone retains value/error types and laziness", () => {
     const missing = mock(() => "missing");
     const unwrapOption = Result.WhenNone(missing);
     expect(unwrapOption(Result.Ok(Option.Some(2))).unwrap()).toBe(2);
-    expect(unwrapOption(Result.Ok(Option.None<number>())).plain())
-      .toEqual({ success: false, error: "missing" });
-    expect(unwrapOption(Result.Fail<string, Option<number>>("outer")).plain())
-      .toEqual({ success: false, error: "outer" });
+    expect(unwrapOption(Result.Ok(Option.None<number>())).plain()).toEqual({
+      success: false,
+      error: "missing",
+    });
+    expect(
+      unwrapOption(Result.Fail<string, Option<number>>("outer")).plain(),
+    ).toEqual({ success: false, error: "outer" });
     expect(missing).toHaveBeenCalledTimes(1);
   });
 
   test("FailSome retains the original failure, fails presence, and succeeds with void on absence", () => {
     const error = mock((value: number) => `exists:${value}`);
     const failPresent = Result.FailSome(error);
-    expect(failPresent(Result.Ok(Option.Some(2))).plain()).toEqual({ success: false, error: "exists:2" });
-    expect(failPresent(Result.Ok(Option.None<number>())).plain()).toEqual({ success: true, value: undefined });
-    expect(failPresent(Result.Fail<string, Option<number>>("outer")).plain()).toEqual({ success: false, error: "outer" });
+    expect(failPresent(Result.Ok(Option.Some(2))).plain()).toEqual({
+      success: false,
+      error: "exists:2",
+    });
+    expect(failPresent(Result.Ok(Option.None<number>())).plain()).toEqual({
+      success: true,
+      value: undefined,
+    });
+    expect(
+      failPresent(Result.Fail<string, Option<number>>("outer")).plain(),
+    ).toEqual({ success: false, error: "outer" });
     expect(error).toHaveBeenCalledTimes(1);
   });
 
   test("FailSuccess preserves the reference inversion with a truthful void success", () => {
     const error = mock((value: number) => `inverted:${value}`);
     const invert = Result.FailSuccess(error);
-    expect(invert(Result.Ok(2)).plain()).toEqual({ success: false, error: "inverted:2" });
-    expect(invert(Result.Fail<string, number>("original")).plain()).toEqual({ success: true, value: undefined });
+    expect(invert(Result.Ok(2)).plain()).toEqual({
+      success: false,
+      error: "inverted:2",
+    });
+    expect(invert(Result.Fail<string, number>("original")).plain()).toEqual({
+      success: true,
+      value: undefined,
+    });
     expect(error).toHaveBeenCalledTimes(1);
   });
 });
@@ -159,31 +199,51 @@ describe("exception and invariant corrections", () => {
     expect(captured).toBeInstanceOf(Promise);
     expect((await captured).unwrap()).toBe(2);
     expect((await Result.Try(() => Promise.resolve(3))).unwrap()).toBe(3);
-    const thenable = { then(resolve: (value: number) => void) { resolve(4); } };
+    const thenable = {
+      then(resolve: (value: number) => void) {
+        resolve(4);
+      },
+    };
     expect((await Result.Try(() => thenable)).unwrap()).toBe(4);
   });
 
   test("Try maps unknown failures and skips its mapper on success", async () => {
     const mapError = mock((cause: unknown) => ({ cause }));
     expect((await Result.Try(() => 1, mapError)).unwrap()).toBe(1);
-    expect((await Result.Try(() => { throw "bad"; }, mapError)).plain())
-      .toEqual({ success: false, error: { cause: "bad" } });
+    expect(
+      (
+        await Result.Try(() => {
+          throw "bad";
+        }, mapError)
+      ).plain(),
+    ).toEqual({ success: false, error: { cause: "bad" } });
     expect(mapError).toHaveBeenCalledTimes(1);
   });
 
   test("Promise maps rejected values and skips its mapper on success", async () => {
     const mapError = mock((cause: unknown) => ({ cause }));
-    expect((await Result.Promise(Promise.resolve(1), mapError)).unwrap()).toBe(1);
-    expect((await Result.Promise(Promise.reject("bad"), mapError)).plain())
-      .toEqual({ success: false, error: { cause: "bad" } });
+    expect((await Result.Promise(Promise.resolve(1), mapError)).unwrap()).toBe(
+      1,
+    );
+    expect(
+      (await Result.Promise(Promise.reject("bad"), mapError)).plain(),
+    ).toEqual({ success: false, error: { cause: "bad" } });
     expect(mapError).toHaveBeenCalledTimes(1);
   });
 
   test("exceptions from error mappers propagate", async () => {
     const error = new Error("mapper error");
-    const mapper = () => { throw error; };
-    await expect(Result.Try(() => { throw "original"; }, mapper)).rejects.toBe(error);
-    await expect(Result.Promise(Promise.reject("original"), mapper)).rejects.toBe(error);
+    const mapper = () => {
+      throw error;
+    };
+    await expect(
+      Result.Try(() => {
+        throw "original";
+      }, mapper),
+    ).rejects.toBe(error);
+    await expect(
+      Result.Promise(Promise.reject("original"), mapper),
+    ).rejects.toBe(error);
   });
 
   test("asResultValue preserves callable errors without invoking them", () => {
@@ -206,9 +266,14 @@ describe("exception and invariant corrections", () => {
     expect(Option.Some(1).match({ some: () => 2, none: () => "none" })).toBe(2);
   });
 
-  test.each([null, undefined])("Some rejects untyped nullable input (%p)", (value) => {
-    expect(() => Reflect.apply(Option.Some, undefined, [value])).toThrow(TypeError);
-  });
+  test.each([null, undefined])(
+    "Some rejects untyped nullable input (%p)",
+    (value) => {
+      expect(() => Reflect.apply(Option.Some, undefined, [value])).toThrow(
+        TypeError,
+      );
+    },
+  );
 
   test("Of retains nullable sentinels and falsy present values", () => {
     expect(Option.Of(null).get()).toBeNull();

@@ -2,8 +2,16 @@
 bun = "1.4.2"
 
 [tasks.verify]
-description = "Check documentation, agent harnesses, types, and tests"
+description = "Check formatting, documentation, agent harnesses, types, and tests"
 run = "bun run verify"
+
+[tasks.format]
+description = "Format TypeScript, JSON, and CI configuration"
+run = "bun run format"
+
+[tasks."format:check"]
+description = "Check formatting without modifying files"
+run = "bun run format:check"
 
 [tasks.test]
 description = "Run all runtime tests"

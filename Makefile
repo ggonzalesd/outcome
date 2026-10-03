@@ -1,7 +1,13 @@
-.PHONY: help verify test test-unit test-integration typecheck docs-check harness-check pack-check
+.PHONY: help format format-check verify test test-unit test-integration typecheck docs-check harness-check pack-check
 
 help:
-	@echo "verify test test-unit test-integration typecheck docs-check harness-check pack-check"
+	@echo "format format-check verify test test-unit test-integration typecheck docs-check harness-check pack-check"
+
+format:
+	bun run format
+
+format-check:
+	bun run format:check
 
 verify:
 	bun run verify

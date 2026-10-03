@@ -1,15 +1,25 @@
 import { Option, Result, UnwrapError } from "outcome";
 import { Result as SubpathResult } from "outcome/result";
-import { Option as SubpathOption, UnwrapError as SubpathUnwrapError } from "outcome/option";
+import {
+  Option as SubpathOption,
+  UnwrapError as SubpathUnwrapError,
+} from "outcome/option";
 
 const success = Result.Ok(Option.Some(21))
   .whenNone(() => "missing")
   .map((value) => value * 2)
   .unwrap();
-const missing = Option.Of(undefined).asResult("missing").orElse((error) => error);
+const missing = Option.Of(undefined)
+  .asResult("missing")
+  .orElse((error) => error);
 const rejected = (await Result.Try(() => Promise.reject("rejected"))).plain();
-if (rejected.success || rejected.error !== "rejected") throw new Error("Async contract failed");
-if (SubpathResult !== Result || SubpathOption !== Option || SubpathUnwrapError !== UnwrapError) {
+if (rejected.success || rejected.error !== "rejected")
+  throw new Error("Async contract failed");
+if (
+  SubpathResult !== Result ||
+  SubpathOption !== Option ||
+  SubpathUnwrapError !== UnwrapError
+) {
   throw new Error("Export identity failed");
 }
 

@@ -4,7 +4,9 @@ import { Result as SubpathResult } from "outcome/result";
 import { Option as SubpathOption } from "outcome/option";
 
 type Equal<Left, Right> =
-  (<T>() => T extends Left ? 1 : 2) extends (<T>() => T extends Right ? 1 : 2) ? true : false;
+  (<T>() => T extends Left ? 1 : 2) extends <T>() => T extends Right ? 1 : 2
+    ? true
+    : false;
 type Assert<T extends true> = T;
 
 const first: Result<number, "first"> = Result.Ok(1);
@@ -22,7 +24,12 @@ export type ConsumerContracts = [
   Assert<Equal<typeof SubpathResult, typeof Result>>,
   Assert<Equal<typeof SubpathOption, typeof Option>>,
   Assert<Equal<typeof tuple, Result<[number, string], "first" | "second">>>,
-  Assert<Equal<typeof record, Result<{ first: number; second: string }, "first" | "second">>>,
+  Assert<
+    Equal<
+      typeof record,
+      Result<{ first: number; second: string }, "first" | "second">
+    >
+  >,
   Assert<Equal<typeof optionalTuple, Option<[number, string]>>>,
   Assert<Equal<typeof nullable, Option<string>>>,
   Assert<Equal<typeof required, Result<number, "outer" | "missing">>>,

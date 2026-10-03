@@ -17,7 +17,10 @@ test("plain view cannot mutate Result state", () => {
 test("Result.Zip ignores inherited entries", () => {
   const entries = { own: Result.Ok(1) };
   Reflect.setPrototypeOf(entries, { inherited: Result.Fail("not-an-entry") });
-  expect(Result.Zip(entries).plain()).toEqual({ success: true, value: { own: 1 } });
+  expect(Result.Zip(entries).plain()).toEqual({
+    success: true,
+    value: { own: 1 },
+  });
 });
 test("Zip retains own non-enumerable and symbol entries", () => {
   const key = Symbol("field");
@@ -31,16 +34,19 @@ test("Option.Zip ignores inherited absent entries", () => {
   expect(Option.Zip(entries).get()).toEqual({ own: 1 });
 });
 
-test.each([null, undefined])("absence keeps its input sentinel and transformations produce None (%p)", (value) => {
-  const option = Option.Of<number>(value);
-  const map = mock((present: number) => present + 1);
-  const filter = mock(() => true);
-  expect(option.get()).toBe(value);
-  expect(option.map(map).get()).toBeNull();
-  expect(option.filter(filter).get()).toBeNull();
-  expect(map).not.toHaveBeenCalled();
-  expect(filter).not.toHaveBeenCalled();
-});
+test.each([null, undefined])(
+  "absence keeps its input sentinel and transformations produce None (%p)",
+  (value) => {
+    const option = Option.Of<number>(value);
+    const map = mock((present: number) => present + 1);
+    const filter = mock(() => true);
+    expect(option.get()).toBe(value);
+    expect(option.map(map).get()).toBeNull();
+    expect(option.filter(filter).get()).toBeNull();
+    expect(map).not.toHaveBeenCalled();
+    expect(filter).not.toHaveBeenCalled();
+  },
+);
 
 test("whenNone keeps callable error payloads without invoking them", () => {
   const error = mock(() => "error payload");
@@ -53,5 +59,11 @@ test("whenNone keeps callable error payloads without invoking them", () => {
 
 test("whenNone propagates exceptions from the missing-value factory", () => {
   const error = new Error("factory failure");
-  expectThrown(() => Result.Ok(Option.None<number>()).whenNone(() => { throw error; }), error);
+  expectThrown(
+    () =>
+      Result.Ok(Option.None<number>()).whenNone(() => {
+        throw error;
+      }),
+    error,
+  );
 });

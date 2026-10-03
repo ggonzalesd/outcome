@@ -202,12 +202,14 @@ Installing Outcome does not apply this repository's Bun or mise settings to the 
 
 ## Development and verification
 
-Bun 1.4.2 is pinned through mise. TypeScript and Bun types are development-only dependencies with
+Bun 1.4.2 is pinned through mise. TypeScript, Bun types, and Prettier are development-only dependencies with
 exact versions and bun.lock. After obtaining any required installation approval, use
 `bun install --frozen-lockfile`. The isolated linker and global store reuse the personal Bun cache;
 no workstation path is committed. Test-only ambient type links preserve shared storage.
 
 ```sh
+make format
+make format-check
 make verify
 make test-unit
 make test-integration
@@ -215,6 +217,13 @@ make typecheck
 bun run test:coverage
 make pack-check
 ```
+
+Prettier formats TypeScript, root JSON/JSONC configuration, CI YAML, and the shared VS Code settings.
+`make format` writes formatting changes; `make format-check` checks without modifying files, and
+`make verify` includes that check. Markdown, TOML, and Makefiles retain their existing layout.
+The configuration uses two spaces, double quotes, semicolons, trailing commas, LF, and an 80-column
+print width, consistent with `.editorconfig`. VS Code uses the recommended Prettier extension and
+formats supported files on save using the project's installed formatter version.
 
 The original 150 behavior cases are adapted to Bun and checked alongside additional regression and
 collection cases. This does not claim execution of the original Vitest workspace. Compile-time

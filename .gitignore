@@ -9,7 +9,9 @@ dist/
 !.env.example
 .DS_Store
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .codex/
 .claude/settings.local.json
 .gemini/

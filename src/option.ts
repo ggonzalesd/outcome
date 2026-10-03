@@ -3,7 +3,8 @@ import { UnwrapError } from "./unwrap-error.ts";
 export { UnwrapError } from "./unwrap-error.ts";
 
 const NONE_UNWRAP_MESSAGE = "Option is None. Cannot unwrap a None value.";
-const SOME_NULLABLE_MESSAGE = "Option.Some requires a non-nullable value. Use Option.Of for nullable input.";
+const SOME_NULLABLE_MESSAGE =
+  "Option.Some requires a non-nullable value. Use Option.Of for nullable input.";
 type NonCallable<E> = E extends (...args: never[]) => unknown ? never : E;
 type ValueOf<O> = O extends Option<infer V> ? V : never;
 type TupleValues<T extends readonly Option<NonNullable<unknown>>[]> = {
@@ -16,7 +17,9 @@ function isPresent<T>(value: T): value is NonNullable<T> {
 }
 
 /** Describe arbitrary recursive Option nesting around a non-nullable base payload. */
-export type NestedOption<T extends NonNullable<unknown>> = Option<T | NestedOption<T>>;
+export type NestedOption<T extends NonNullable<unknown>> = Option<
+  T | NestedOption<T>
+>;
 /** Extract the final payload type by removing nested Option layers. */
 export type FlattenedOption<T extends NonNullable<unknown>> =
   T extends Option<infer U> ? FlattenedOption<U> : T;
@@ -52,7 +55,9 @@ export class Option<T extends NonNullable<unknown>> {
   }
 
   /** Treat only null and undefined as absence and retain other values, including falsy payloads. */
-  static Of<T extends NonNullable<unknown>>(value: T | null | undefined): Option<T>;
+  static Of<T extends NonNullable<unknown>>(
+    value: T | null | undefined,
+  ): Option<T>;
   static Of<T>(value: T): Option<NonNullable<T>>;
   static Of<T>(value: T): Option<NonNullable<T>> {
     if (isPresent(value)) return new Option<NonNullable<T>>(value);
@@ -79,9 +84,15 @@ export class Option<T extends NonNullable<unknown>> {
   }
 
   /** Flatten nested Options iteratively, including an already flat Option. */
-  static Collapse<T extends NonNullable<unknown>>(option: Option<NestedOption<T>>): Option<FlattenedOption<T>>;
-  static Collapse<T extends NonNullable<unknown>>(option: Option<T>): Option<FlattenedOption<T>>;
-  static Collapse<T extends NonNullable<unknown>>(option: Option<T>): Option<FlattenedOption<T>> {
+  static Collapse<T extends NonNullable<unknown>>(
+    option: Option<NestedOption<T>>,
+  ): Option<FlattenedOption<T>>;
+  static Collapse<T extends NonNullable<unknown>>(
+    option: Option<T>,
+  ): Option<FlattenedOption<T>>;
+  static Collapse<T extends NonNullable<unknown>>(
+    option: Option<T>,
+  ): Option<FlattenedOption<T>> {
     return option.collapse();
   }
 
@@ -118,12 +129,16 @@ export class Option<T extends NonNullable<unknown>> {
   }
 
   /** Explicit tuple spelling; Join remains available for existing callers. */
-  static Tuple<const T extends readonly Option<NonNullable<unknown>>[]>(options: T): Option<TupleValues<T>> {
+  static Tuple<const T extends readonly Option<NonNullable<unknown>>[]>(
+    options: T,
+  ): Option<TupleValues<T>> {
     return Option.Join(options);
   }
 
   /** Build Result<Option<T>, E> from Option<Result<T, E>> without discarding inner errors. */
-  static Switch<T extends NonNullable<unknown>, E>(op: Option<Result<T, E>>): Result<Option<T>, E> {
+  static Switch<T extends NonNullable<unknown>, E>(
+    op: Option<Result<T, E>>,
+  ): Result<Option<T>, E> {
     return op.switch<T, E>();
   }
 
@@ -154,7 +169,8 @@ export class Option<T extends NonNullable<unknown>> {
   asResult(error: unknown): Result<T, unknown> {
     if (isPresent(this._v)) return Result.Ok(this._v);
     // Public overloads admit only zero-argument factories in the callable branch.
-    const value: unknown = typeof error === "function" ? (error as () => unknown)() : error;
+    const value: unknown =
+      typeof error === "function" ? (error as () => unknown)() : error;
     return Result.Fail(value);
   }
 
@@ -164,7 +180,9 @@ export class Option<T extends NonNullable<unknown>> {
   }
 
   /** Move an inner Result outward; absent Option becomes successful absence. */
-  switch<T extends NonNullable<unknown>, E>(this: Option<Result<T, E>>): Result<Option<T>, E> {
+  switch<T extends NonNullable<unknown>, E>(
+    this: Option<Result<T, E>>,
+  ): Result<Option<T>, E> {
     if (!isPresent(this._v)) {
       return Result.Ok<Option<T>, E>(Option.None<T>());
     }

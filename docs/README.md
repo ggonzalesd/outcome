@@ -21,3 +21,4 @@
 - [First functional version preparation](changelogs/2026-10/01-008-first-version.md)
 - [v0.1.0 publication and installation verification](changelogs/2026-10/01-009-first-version-published.md)
 - [Editor discovery of Bun types](changelogs/2026-10/03-001-editor-bun-types.md)
+- [Project formatting](changelogs/2026-10/03-002-project-formatting.md)

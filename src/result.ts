@@ -67,16 +67,30 @@ export class Result<T, E = unknown> {
   }
 
   /** Capture promise rejection as unknown, or explicitly map it to a typed error. */
-  static Promise<T>(promise: PromiseLike<T>): Promise<Result<Awaited<T>, unknown>>;
-  static Promise<T, E>(promise: PromiseLike<T>, mapError: (reason: unknown) => E): Promise<Result<Awaited<T>, E>>;
-  static async Promise<T>(promise: PromiseLike<T>, mapError?: (reason: unknown) => unknown): Promise<Result<Awaited<T>, unknown>> {
+  static Promise<T>(
+    promise: PromiseLike<T>,
+  ): Promise<Result<Awaited<T>, unknown>>;
+  static Promise<T, E>(
+    promise: PromiseLike<T>,
+    mapError: (reason: unknown) => E,
+  ): Promise<Result<Awaited<T>, E>>;
+  static async Promise<T>(
+    promise: PromiseLike<T>,
+    mapError?: (reason: unknown) => unknown,
+  ): Promise<Result<Awaited<T>, unknown>> {
     return Result.Try(() => promise, mapError ?? ((reason: unknown) => reason));
   }
 
   /** Preserve the asynchronous contract while capturing both throws and rejected return values. */
   static Try<T>(fn: () => T): Promise<Result<Awaited<T>, unknown>>;
-  static Try<T, E>(fn: () => T, mapError: (reason: unknown) => E): Promise<Result<Awaited<T>, E>>;
-  static async Try<T>(fn: () => T, mapError?: (reason: unknown) => unknown): Promise<Result<Awaited<T>, unknown>> {
+  static Try<T, E>(
+    fn: () => T,
+    mapError: (reason: unknown) => E,
+  ): Promise<Result<Awaited<T>, E>>;
+  static async Try<T>(
+    fn: () => T,
+    mapError?: (reason: unknown) => unknown,
+  ): Promise<Result<Awaited<T>, unknown>> {
     try {
       return Result.Ok(await fn());
     } catch (error: unknown) {
@@ -85,43 +99,72 @@ export class Result<T, E = unknown> {
   }
 
   /** Build a lazy Option-required conversion without losing the outer error type. */
-  static WhenNone<X>(fn: () => X): <T extends NonNullable<unknown>, E>(result: Result<Option<T>, E>) => Result<T, X | E>;
-  static WhenNone<T extends NonNullable<unknown>, E, X>(fn: () => X): (result: Result<Option<T>, E>) => Result<T, X | E>;
+  static WhenNone<X>(
+    fn: () => X,
+  ): <T extends NonNullable<unknown>, E>(
+    result: Result<Option<T>, E>,
+  ) => Result<T, X | E>;
+  static WhenNone<T extends NonNullable<unknown>, E, X>(
+    fn: () => X,
+  ): (result: Result<Option<T>, E>) => Result<T, X | E>;
   static WhenNone<X>(fn: () => X) {
-    return <T extends NonNullable<unknown>, E>(result: Result<Option<T>, E>): Result<T, X | E> => result.whenNone(fn);
+    return <T extends NonNullable<unknown>, E>(
+      result: Result<Option<T>, E>,
+    ): Result<T, X | E> => result.whenNone(fn);
   }
 
   /** Build a presence rejection that preserves existing failures and succeeds with void on absence. */
-  static FailSome<T extends NonNullable<unknown>, X>(fn: (value: T) => X): <E>(result: Result<Option<T>, E>) => Result<void, X | E>;
-  static FailSome<T extends NonNullable<unknown>, E, X>(fn: (value: T) => X): (result: Result<Option<T>, E>) => Result<void, X | E>;
+  static FailSome<T extends NonNullable<unknown>, X>(
+    fn: (value: T) => X,
+  ): <E>(result: Result<Option<T>, E>) => Result<void, X | E>;
+  static FailSome<T extends NonNullable<unknown>, E, X>(
+    fn: (value: T) => X,
+  ): (result: Result<Option<T>, E>) => Result<void, X | E>;
   static FailSome<T extends NonNullable<unknown>, X>(fn: (value: T) => X) {
-    return <E>(result: Result<Option<T>, E>): Result<void, X | E> => result.failSome(fn);
+    return <E>(result: Result<Option<T>, E>): Result<void, X | E> =>
+      result.failSome(fn);
   }
 
   /** Build the reference success/failure inversion with a void success type. */
-  static FailSuccess<T, X>(fn: (value: T) => X): <E>(result: Result<T, E>) => Result<void, X | E>;
-  static FailSuccess<T, E, X>(fn: (value: T) => X): (result: Result<T, E>) => Result<void, X | E>;
+  static FailSuccess<T, X>(
+    fn: (value: T) => X,
+  ): <E>(result: Result<T, E>) => Result<void, X | E>;
+  static FailSuccess<T, E, X>(
+    fn: (value: T) => X,
+  ): (result: Result<T, E>) => Result<void, X | E>;
   static FailSuccess<T, X>(fn: (value: T) => X) {
-    return <E>(result: Result<T, E>): Result<void, X | E> => result.failSuccess(fn);
+    return <E>(result: Result<T, E>): Result<void, X | E> =>
+      result.failSuccess(fn);
   }
 
   /** Build a success-to-Option projection; failures become absence. */
-  static Optional<T extends NonNullable<unknown>, U extends NonNullable<unknown>>(
+  static Optional<
+    T extends NonNullable<unknown>,
+    U extends NonNullable<unknown>,
+  >(
     fn: (value: T) => U | null | undefined,
   ): <E>(result: Result<T, E>) => Option<U> {
     return <E>(result: Result<T, E>) => result.optional(fn);
   }
 
   /** Build a success projection while inferring the incoming error type when applied. */
-  static Map<T, V>(fn: (value: T) => V): <E>(result: Result<T, E>) => Result<V, E>;
-  static Map<T, V, E>(fn: (value: T) => V): (result: Result<T, E>) => Result<V, E>;
+  static Map<T, V>(
+    fn: (value: T) => V,
+  ): <E>(result: Result<T, E>) => Result<V, E>;
+  static Map<T, V, E>(
+    fn: (value: T) => V,
+  ): (result: Result<T, E>) => Result<V, E>;
   static Map<T, V>(fn: (value: T) => V) {
     return <E>(result: Result<T, E>): Result<V, E> => result.map(fn);
   }
 
   /** Build an error projection while inferring the incoming value type when applied. */
-  static MapError<E, N>(fn: (error: E) => N): <T>(result: Result<T, E>) => Result<T, N>;
-  static MapError<E, N, T>(fn: (error: E) => N): (result: Result<T, E>) => Result<T, N>;
+  static MapError<E, N>(
+    fn: (error: E) => N,
+  ): <T>(result: Result<T, E>) => Result<T, N>;
+  static MapError<E, N, T>(
+    fn: (error: E) => N,
+  ): (result: Result<T, E>) => Result<T, N>;
   static MapError<E, N>(fn: (error: E) => N) {
     return <T>(result: Result<T, E>): Result<T, N> => result.mapError(fn);
   }
@@ -144,7 +187,9 @@ export class Result<T, E = unknown> {
   }
 
   /** Explicit tuple spelling; Join remains available for existing callers. */
-  static Tuple<const T extends readonly Result<unknown, unknown>[]>(results: T): Result<TupleValues<T>, ErrorOf<T[number]>> {
+  static Tuple<const T extends readonly Result<unknown, unknown>[]>(
+    results: T,
+  ): Result<TupleValues<T>, ErrorOf<T[number]>> {
     return Result.Join(results);
   }
 
@@ -155,7 +200,8 @@ export class Result<T, E = unknown> {
     const entries: [PropertyKey, unknown][] = [];
     for (const key of Reflect.ownKeys(results)) {
       const result = results[key as keyof T].plain();
-      if (!result.success) return Result.Fail(result.error as ErrorOf<T[keyof T]>);
+      if (!result.success)
+        return Result.Fail(result.error as ErrorOf<T[keyof T]>);
       entries.push([key, result.value]);
     }
     // All own input fields have been visited. fromEntries safely handles symbol and __proto__ keys.
@@ -192,7 +238,8 @@ export class Result<T, E = unknown> {
     if (!this._v.success) return Result.Fail<E, void>(this._v.error);
 
     const option = this._v.value.get();
-    if (option !== null && option !== undefined) return Result.Fail<X, void>(fn(option));
+    if (option !== null && option !== undefined)
+      return Result.Fail<X, void>(fn(option));
 
     return Result.Ok<void, X>(undefined);
   }
@@ -204,7 +251,9 @@ export class Result<T, E = unknown> {
   }
 
   /** Project successful nullable output into Option; discard an existing failure as absence. */
-  optional<U extends NonNullable<unknown>>(fn: (value: T) => U | null | undefined): Option<U> {
+  optional<U extends NonNullable<unknown>>(
+    fn: (value: T) => U | null | undefined,
+  ): Option<U> {
     if (this._v.success) {
       const result = fn(this._v.value);
       return Option.Of(result);

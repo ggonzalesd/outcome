@@ -11,14 +11,31 @@
   "type": "module",
   "sideEffects": false,
   "packageManager": "bun@1.4.2",
-  "engines": { "bun": ">=1.4.2" },
-  "exports": {
-    ".": { "types": "./src/index.ts", "default": "./src/index.ts" },
-    "./result": { "types": "./src/result.ts", "default": "./src/result.ts" },
-    "./option": { "types": "./src/option.ts", "default": "./src/option.ts" }
+  "engines": {
+    "bun": ">=1.4.2"
   },
-  "files": ["src", "README.md", "LICENSE"],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./result": {
+      "types": "./src/result.ts",
+      "default": "./src/result.ts"
+    },
+    "./option": {
+      "types": "./src/option.ts",
+      "default": "./src/option.ts"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
+    "format": "bun run --bun prettier --write \"{src,tests,scripts}/**/*.ts\" \"*.{json,jsonc}\" \".github/workflows/*.{yml,yaml}\" \".vscode/*.json\"",
+    "format:check": "bun run --bun prettier --check \"{src,tests,scripts}/**/*.ts\" \"*.{json,jsonc}\" \".github/workflows/*.{yml,yaml}\" \".vscode/*.json\"",
     "test": "bun test ./tests/unit ./tests/integration",
     "test:unit": "bun test ./tests/unit",
     "test:integration": "bun test ./tests/integration",
@@ -26,8 +43,12 @@
     "typecheck": "bun run --bun tsc --noEmit -p tsconfig.lib.json && bun run --bun tsc --noEmit -p tsconfig.test.json",
     "docs:check": "bun run scripts/check-docs.ts",
     "harness:check": "bun run scripts/check-harness.ts",
-    "verify": "bun run docs:check && bun run harness:check && bun run typecheck && bun run test",
+    "verify": "bun run format:check && bun run docs:check && bun run harness:check && bun run typecheck && bun run test",
     "pack:check": "bun pm pack --dry-run --ignore-scripts"
   },
-  "devDependencies": { "@types/bun": "1.4.2", "typescript": "7.0.2" }
+  "devDependencies": {
+    "@types/bun": "1.4.2",
+    "prettier": "3.9.9",
+    "typescript": "7.0.2"
+  }
 }

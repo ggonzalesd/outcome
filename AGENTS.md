@@ -78,13 +78,15 @@ credentials, tool state, or reference-project rules unrelated to this library.
 
 | Command | Scope |
 |---|---|
+| `make format` | Apply project formatting |
+| `make format-check` | Check project formatting without writes |
 | `make test-unit` | Unit tests |
 | `make test-integration` | Package/consumer boundary without network or services |
 | `make typecheck` | Pure source, tooling, tests, and compile-time contracts |
 | `make docs-check` | Relative documentation targets |
 | `make harness-check` | Supported harness pointers and shared instruction loading |
 | `make pack-check` | Package file selection without producing an artifact |
-| `make verify` | Documentation, harnesses, types, and all runtime tests |
+| `make verify` | Formatting, documentation, harnesses, types, and all runtime tests |
 
 Equivalent Bun scripts are in `package.json`; mise tasks are in `mise.toml`. Tests must not pass
 silently when absent. Do not substitute runtime success for checking TypeScript contracts. Document

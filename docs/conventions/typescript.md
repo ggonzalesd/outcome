@@ -17,6 +17,19 @@ only `src/` without ambient runtime types. The test project includes tests and s
 types and symlink preservation, excluding standalone consumer fixtures. `make typecheck` explicitly
 checks both projects without emitting files.
 
+## Formatting
+
+Use the project's pinned Prettier development dependency and `.prettierrc.json` for TypeScript and
+tooling configuration: two spaces, double quotes, semicolons, trailing commas, LF, and an 80-column
+print width. `.editorconfig` retains tab indentation for Makefiles.
+
+`make format` applies formatting; `make format-check` validates it, and `make verify` runs the check
+before other verification. These commands cover source, tests, scripts, root JSON/JSONC files, CI
+YAML, and shared VS Code configuration. Markdown and TOML are outside this formatting scope.
+The tracked VS Code settings select Prettier for supported languages and enable format on save;
+other files in `.vscode/` remain ignored. Installing the recommended editor extension is separate
+from installing repository development dependencies.
+
 ## Result
 
 - `Result<T, E = unknown>` is a class. `plain()` exposes the frozen `ResultPlain<T, E>` discriminated
