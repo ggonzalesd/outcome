@@ -13,6 +13,7 @@
 - [Git workflow](playbooks/git-workflow.md)
 - [v0.1.0 release notes](releases/v0.1.0.md)
 - [v0.1.1 release notes](releases/v0.1.1.md)
+- [v0.2.0 release notes](releases/v0.2.0.md)
 - [Initial setup record](changelogs/2026-10/01-001-initial-setup.md)
 - [Reference audit and class API restoration](changelogs/2026-10/01-002-reference-class-api.md)
 - [Core cleanup and behavior preservation](changelogs/2026-10/01-003-core-cleanup.md)
