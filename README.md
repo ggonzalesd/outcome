@@ -40,6 +40,7 @@ available, as in the reference. Commands that succeed without a payload use Resu
 | `Unwrap(result)` | `unwrap()` extracts success or throws the original error verbatim |
 | `Map(fn)` | `map(fn)` transforms success and keeps the error type |
 | `MapError(fn)` | `mapError(fn)` transforms failure and keeps the value type |
+| `Match(patterns)` | `match({ success, failure })` returns the active handler's output |
 | `Optional(fn)` | `optional(fn)` converts success through Option.Of; failure becomes absence |
 | `WhenNone(fn)` | `whenNone(fn)` extracts Result<Option<T>> or lazily fails on absence |
 | `FailSome(fn)` | `failSome(fn)` fails presence, succeeds with void on absence, retains existing failure |
@@ -57,6 +58,25 @@ Additional instance methods retain the reference contract:
 
 Ordinary callback exceptions propagate. Result errors can be arbitrary typed values; unwrap does
 not wrap them in a different Error class. Prefer plain/error handling for expected failure.
+
+Use `match` to resolve either branch into any output, without a Result wrapper. The handlers can
+return different types or void, and only the active handler runs. Promises are returned as-is.
+
+```ts
+const message = parseNumber("21").match({
+  success: (value) => `Value: ${value}`,
+  failure: (error) => `Invalid input: ${error.input}`,
+});
+
+const toOption = Result.Match({
+  success: (value: number) => Option.Some(value),
+  failure: (_error: ParseError) => Option.None<number>(),
+});
+const option = toOption(parseNumber("21"));
+```
+
+For this specific conversion, `result.optional((value) => value)` also produces an Option and
+discards failures.
 
 ## WhenNone and functional composition
 

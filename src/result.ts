@@ -169,6 +169,14 @@ export class Result<T, E = unknown> {
     return <T>(result: Result<T, E>): Result<T, N> => result.mapError(fn);
   }
 
+  /** Build an exhaustive branch handler, permitting different outputs or void. */
+  static Match<T, E, U, V = U>(patterns: {
+    success: (value: T) => U;
+    failure: (error: E) => V;
+  }): (result: Result<T, E>) => U | V {
+    return (result: Result<T, E>) => result.match(patterns);
+  }
+
   /** Combine tuple/array values in order; return the first failure without restricting its type. */
   static Join<const T extends readonly Result<unknown, unknown>[]>(
     results: T,
@@ -275,6 +283,16 @@ export class Result<T, E = unknown> {
       return Result.Fail(fn(this._v.error));
     }
     return Result.Ok(this._v.value);
+  }
+
+  /** Return the active handler's output; propagate exceptions and leave promises untouched. */
+  match<U, V = U>(patterns: {
+    success: (value: T) => U;
+    failure: (error: E) => V;
+  }): U | V {
+    return this._v.success
+      ? patterns.success(this._v.value)
+      : patterns.failure(this._v.error);
   }
 
   /** Observe success once and return this instance; skip failure. */

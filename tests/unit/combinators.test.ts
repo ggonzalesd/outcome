@@ -1,5 +1,57 @@
 import { describe, expect, mock, test } from "bun:test";
 import { Option, Result } from "../../src/index.ts";
+import { expectThrown } from "../helpers/expect-thrown.ts";
+
+describe("Result match", () => {
+  test("runs only the active handler with the original payload and returns its output", () => {
+    const value = { count: 2 };
+    const error = { code: "missing" };
+    const success = mock((item: typeof value) => item);
+    const failure = mock((reason: typeof error) => reason);
+    const match = Result.Match({ success, failure });
+
+    expect(match(Result.Ok(value))).toBe(value);
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(failure).not.toHaveBeenCalled();
+    expect(match(Result.Fail(error))).toBe(error);
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(failure).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith(value);
+    expect(failure).toHaveBeenCalledWith(error);
+  });
+
+  test("accepts void and distinct return values, including promises", async () => {
+    const success = mock((_value: number): void => {});
+    const failure = mock((_error: string): void => {});
+    expect(Result.Ok(1).match({ success, failure })).toBeUndefined();
+    expect(Result.Fail("bad").match({ success, failure })).toBeUndefined();
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(failure).toHaveBeenCalledTimes(1);
+    expect(
+      Result.Fail("bad").match({ success: () => 1, failure: (e) => e }),
+    ).toBe("bad");
+    const promise = Promise.resolve(2);
+    expect(
+      Result.Ok(1).match({ success: () => promise, failure: () => 0 }),
+    ).toBe(promise);
+    expect(await promise).toBe(2);
+  });
+
+  test("propagates the selected handler's thrown value", () => {
+    const thrown = { code: "thrown" };
+    const raise = (): never => {
+      throw thrown;
+    };
+    expectThrown(
+      () => Result.Ok(1).match({ success: raise, failure: () => 0 }),
+      thrown,
+    );
+    expectThrown(
+      () => Result.Fail("bad").match({ success: () => 0, failure: raise }),
+      thrown,
+    );
+  });
+});
 
 describe("Result collections", () => {
   test("Join and Tuple retain heterogeneous values in order", () => {

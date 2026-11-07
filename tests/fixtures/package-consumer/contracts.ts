@@ -19,6 +19,10 @@ const nested: Result<Option<number>, "outer"> = Result.Ok(Option.Some(1));
 const required = Result.WhenNone(() => "missing" as const)(nested);
 const captured = SubpathResult.Try(() => Promise.resolve(1));
 const plain: ResultPlain<number, "first"> = first.plain();
+const matched = first.match({
+  success: (value) => value,
+  failure: (error) => error,
+});
 
 export type ConsumerContracts = [
   Assert<Equal<typeof SubpathResult, typeof Result>>,
@@ -34,6 +38,7 @@ export type ConsumerContracts = [
   Assert<Equal<typeof nullable, Option<string>>>,
   Assert<Equal<typeof required, Result<number, "outer" | "missing">>>,
   Assert<Equal<typeof captured, Promise<Result<number, unknown>>>>,
+  Assert<Equal<typeof matched, number | "first">>,
   Assert<Equal<FlattenedOption<Option<Option<number>>>, number>>,
 ];
 
@@ -47,4 +52,6 @@ export function rejectedUsage(): void {
   Result.Tuple([1]);
   // @ts-expect-error The public discriminated view is immutable.
   plain.success = false;
+  // @ts-expect-error A match must handle failures as well as successes.
+  first.match({ success: (value: number) => value });
 }

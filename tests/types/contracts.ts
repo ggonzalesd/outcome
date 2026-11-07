@@ -19,6 +19,18 @@ export function checkContracts(
   expectTypeOf(
     Result.MapError((error: "input") => ({ error }))(result),
   ).toEqualTypeOf<Result<number, { error: "input" }>>();
+  expectTypeOf(
+    result.match({ success: (value) => value + 1, failure: (error) => error }),
+  ).toEqualTypeOf<number | "input">();
+  expectTypeOf(
+    result.match({ success: () => {}, failure: () => {} }),
+  ).toEqualTypeOf<void>();
+  expectTypeOf(
+    Result.Match({
+      success: (value: number) => value + 1,
+      failure: (error: "input") => error,
+    })(result),
+  ).toEqualTypeOf<number | "input">();
 
   const nested: Result<Option<number>, "outer"> = Result.Ok(Option.Some(1));
   expectTypeOf(nested.whenNone(() => "missing" as const)).toEqualTypeOf<
@@ -136,6 +148,13 @@ export function checkContracts(
 
   // @ts-expect-error Result.Plain exposes a read-only discriminant.
   plain.success = true;
+  // @ts-expect-error Both match branches are required.
+  result.match({ success: (value: number) => value });
+  result.match({
+    success: (value) => value,
+    // @ts-expect-error The failure handler must accept the Result's error type.
+    failure: (error: number) => error,
+  });
   // @ts-expect-error Some requires a non-nullable payload; nullable input belongs in Of.
   Option.Some(undefined);
   // @ts-expect-error Some requires a non-nullable payload.

@@ -38,5 +38,15 @@ if (Result.Tuple([Result.Ok(1), Result.Ok("two")]).unwrap()[1] !== "two") {
 if (Option.Zip({ count: Option.Some(1) }).unwrap().count !== 1) {
   throw new Error("Zip contract failed");
 }
+const match = Result.Match({
+  success: (value: number) => `value:${value}`,
+  failure: (error: string) => `error:${error}`,
+});
+if (
+  match(Result.Ok(1)) !== "value:1" ||
+  match(Result.Fail("bad")) !== "error:bad"
+) {
+  throw new Error("Match contract failed");
+}
 
 export const observed = { success, missing, unwrapError };

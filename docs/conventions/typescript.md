@@ -38,6 +38,9 @@ from installing repository development dependencies.
   generic parameters remain available. Successful commands without a payload use void.
 - `map`, `mapError`, `ifSuccess`, and `ifFailure` visit only the active variant. Their functional
   counterparts preserve type inference until an input Result is supplied. Callback exceptions propagate.
+- `match` and its curried static counterpart `Match` require success and failure handlers, execute
+  exactly the active handler with its original payload, and return its result directly. Branches may
+  return different types or void; synchronous exceptions propagate and promises are not awaited.
 - `orElse` extracts a value with an error-dependent fallback. It does not return another Result.
   `orElseThrow` throws the supplied mapped Error only on failure. `unwrap` throws the original error
   value verbatim, even if that value is a string, object, number, null, or undefined.
