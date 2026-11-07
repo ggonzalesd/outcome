@@ -209,6 +209,34 @@ commit reference can also pin a revision. See the [v0.1.1 release notes](docs/re
 The private package.json flag prevents registry publication, not GitHub visibility. A supported
 Node/browser distribution has not yet been added.
 
+## Compact release build
+
+`make build` creates `dist/index.mjs`, a minified ESM bundle with public and class names retained,
+alongside TypeScript declarations. Two small JavaScript re-exports preserve `outcome/result` and
+`outcome/option` and share the same class identities as the root entry. The build includes a
+standalone package manifest, README, and license, with no source files or runtime dependencies.
+It uses the project's existing Bun and TypeScript tools. It does not claim Node or browser support
+without separate compatibility testing.
+
+To prepare a release archive after building and verifying the intended version:
+
+```sh
+make verify
+make build
+cd dist
+bun pm pack --ignore-scripts
+```
+
+The generated `.tgz` can be attached to a GitHub Release and installed using its release-asset URL.
+The existing `github:ggonzalesd/outcome#tag` dependency instead downloads the tagged repository
+snapshot; GitHub does not substitute a release asset for that snapshot. Generated `dist/` files
+are not tracked, so direct GitHub dependencies continue to use the source exports. `make verify`
+checks both the existing source package and the built archive in separate offline consumers.
+
+For a release, verify the version and commit, push the authorized commit and a new version tag,
+then attach the generated archive with `gh release create TAG ARCHIVE --verify-tag --notes-file NOTES`.
+Published tags are never moved. Pushing, tagging, and creating a release require explicit approval.
+
 Shared storage is configured by the consumer or its global Bun configuration. To enable it in a
 consumer's bunfig.toml:
 
@@ -229,6 +257,7 @@ no workstation path is committed. Test-only ambient type links preserve shared s
 
 ```sh
 make format
+make build
 make format-check
 make verify
 make test-unit

@@ -134,3 +134,120 @@ test("a separate Bun project installs the tarball and checks runtime and type co
     rmSync(temporary, { recursive: true, force: true });
   }
 });
+
+test("a built release archive preserves public entries, types, and class identity", () => {
+  const temporary = mkdtempSync(join(tmpdir(), "outcome-built-consumer-"));
+  try {
+    run([process.execPath, "run", "build"], root);
+    run(
+      [
+        process.execPath,
+        "pm",
+        "pack",
+        "--ignore-scripts",
+        "--destination",
+        temporary,
+      ],
+      join(root, "dist"),
+    );
+    const archive = readdirSync(temporary).find((name) =>
+      name.endsWith(".tgz"),
+    );
+    if (!archive) throw new Error("Built package archive was not produced.");
+    const consumer = join(temporary, "consumer");
+    cpSync(join(root, "tests", "fixtures", "package-consumer"), consumer, {
+      recursive: true,
+    });
+    writeFileSync(
+      join(consumer, "package.json"),
+      JSON.stringify({
+        name: "outcome-built-consumer",
+        type: "module",
+        private: true,
+        dependencies: { outcome: `file:${join(temporary, archive)}` },
+      }),
+    );
+    run(
+      [
+        process.execPath,
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--cache-dir",
+        join(temporary, "cache"),
+      ],
+      consumer,
+    );
+    run(
+      [
+        process.execPath,
+        join(root, "node_modules", "typescript", "bin", "tsc"),
+        "--noEmit",
+        "-p",
+        join(consumer, "tsconfig.json"),
+      ],
+      consumer,
+    );
+    run(
+      [
+        process.execPath,
+        join(root, "node_modules", "typescript", "bin", "tsc"),
+        "--noEmit",
+        "-p",
+        join(consumer, "tsconfig.json"),
+        "--module",
+        "NodeNext",
+        "--moduleResolution",
+        "NodeNext",
+      ],
+      consumer,
+    );
+    const output = run(
+      [
+        process.execPath,
+        "--no-install",
+        "--eval",
+        'const { observed } = await import("./consumer.ts"); console.log(JSON.stringify(observed));',
+      ],
+      consumer,
+    );
+    expect(JSON.parse(output)).toEqual({
+      success: 42,
+      missing: "missing",
+      unwrapError: true,
+    });
+    const installed = join(consumer, "node_modules", "outcome");
+    expect(readdirSync(installed).sort()).toEqual([
+      "LICENSE",
+      "README.md",
+      "index.d.ts",
+      "index.mjs",
+      "option.d.ts",
+      "option.js",
+      "package.json",
+      "result.d.ts",
+      "result.js",
+      "unwrap-error.d.ts",
+    ]);
+    const names = run(
+      [
+        process.execPath,
+        "--no-install",
+        "--eval",
+        'import { Result, Option, UnwrapError } from "outcome"; console.log(JSON.stringify([Result.name, Option.name, UnwrapError.name, Result.Ok.name, Result.prototype.match.name, Option.Some.name, Option.prototype.match.name]));',
+      ],
+      consumer,
+    );
+    expect(JSON.parse(names)).toEqual([
+      "Result",
+      "Option",
+      "UnwrapError",
+      "Ok",
+      "match",
+      "Some",
+      "match",
+    ]);
+  } finally {
+    rmSync(temporary, { recursive: true, force: true });
+  }
+});

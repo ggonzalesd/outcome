@@ -10,6 +10,7 @@ const ignored = new Set([
   ".codex",
   "node_modules",
   "coverage",
+  "dist",
 ]);
 
 function markdownFiles(directory: string): string[] {

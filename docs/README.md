@@ -5,6 +5,7 @@
 - [TypeScript and API conventions](conventions/typescript.md)
 - [Architecture](knowledge/architecture/core.md)
 - [Current class API decision](knowledge/decisions/ADR-002-preserve-reference-class-api.md)
+- [Compact release artifact decision](knowledge/decisions/ADR-003-compact-release-artifact.md)
 - [Historical initial scope and distribution decision](knowledge/decisions/ADR-001-core-and-github-distribution.md)
 - [Shared-store type resolution](knowledge/gotchas/shared-store-types.md)
 - [Change triage](playbooks/change-triage.md)

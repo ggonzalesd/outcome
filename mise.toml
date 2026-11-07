@@ -5,6 +5,10 @@ bun = "1.4.2"
 description = "Check formatting, documentation, agent harnesses, types, and tests"
 run = "bun run verify"
 
+[tasks.build]
+description = "Build the compact ESM release package"
+run = "bun run build"
+
 [tasks.format]
 description = "Format TypeScript, JSON, and CI configuration"
 run = "bun run format"

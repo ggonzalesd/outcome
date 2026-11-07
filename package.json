@@ -34,6 +34,7 @@
     "LICENSE"
   ],
   "scripts": {
+    "build": "bun run scripts/build.ts",
     "format": "bun run --bun prettier --write \"{src,tests,scripts}/**/*.ts\" \"*.{json,jsonc}\" \".github/workflows/*.{yml,yaml}\" \".vscode/*.json\"",
     "format:check": "bun run --bun prettier --check \"{src,tests,scripts}/**/*.ts\" \"*.{json,jsonc}\" \".github/workflows/*.{yml,yaml}\" \".vscode/*.json\"",
     "test": "bun test ./tests/unit ./tests/integration",

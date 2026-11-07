@@ -1,7 +1,10 @@
-.PHONY: help format format-check verify test test-unit test-integration typecheck docs-check harness-check pack-check
+.PHONY: help build format format-check verify test test-unit test-integration typecheck docs-check harness-check pack-check
 
 help:
-	@echo "format format-check verify test test-unit test-integration typecheck docs-check harness-check pack-check"
+	@echo "build format format-check verify test test-unit test-integration typecheck docs-check harness-check pack-check"
+
+build:
+	bun run build
 
 format:
 	bun run format
